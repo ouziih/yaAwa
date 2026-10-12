@@ -1,4 +1,13 @@
 <template>
+    <a class="skip-link" href="#main-content">
+        Aller au contenu
+    </a>
+    <div class="topbar">
+        Le marché du quartier, à votre rythme.
+        <span>
+            Castors · Dakar · Démonstration
+        </span>
+    </div>
     <header class="site-header" data-component="AppHeader">
         <div class="container header-inner">
             <a aria-label="Teranga Market — Accueil" class="brand" href="index.html">
