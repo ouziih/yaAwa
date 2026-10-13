@@ -25,7 +25,7 @@
             <p>
             Template HTML/CSS · Données fictives
             <br>
-            M. Aly Tall Niang · Projet Vue 3
+            Ouziiih · Projet Vue 3
             </p>
         </footer>
 </template>
