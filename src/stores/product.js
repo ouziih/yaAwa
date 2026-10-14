@@ -1,17 +1,23 @@
-import { api } from '@/services/API';
-import { defineStore } from 'pinia';
-import { computed, ref } from 'vue';
-
-export const useProductStore = defineStore("products",()=>{
-    const items = ref([]);
-    const loading = ref(true);
-    const error = ref('');
-
-    async function load(){
+import { defineStore } from "pinia";
+import { ref, computed } from "vue";
+import { api } from '@/services/api';
+export const useProductsStore = defineStore("products", () => {
+  const items = ref([]),
+    loading = ref(false),
+    error = ref("");
+  const categories = ref([]),
+  categoryError = ref("");
+  const active = computed(() => items.value.filter((p) => p.active));
+  function upsert(product) {
+    const index = items.value.findIndex((p) => p.id === product.id);
+    if (index < 0) items.value.push(product);
+    else items.value[index] = product;
+  }
+  async function load(){
         loading.value = true
 
         try {
-            const products = await api.get('products');
+            const products = await api.get('/products');
              items.value = products
              return products
         } 
@@ -24,37 +30,27 @@ export const useProductStore = defineStore("products",()=>{
         // items.value = [...products]
     }
 
-    const categories = ref([]);
-    const categoryError = ref('');
-    const active = computed(()=>items.value.filter((item)=>item.active));
-
-    function upsert(product) {
-
-        const index = items.value.findIndex(()=>item.id === product.id)
-
-        if(index < 0)
-        {
-            items.value.push(product)
-        }
-        else
-        {
-            index.value[index] = product
-        }
-    }
-
   async function loadCategories() {
-        try {
-           const categorie = await api.get('categories');
-            categories.value = categorie
-        } 
-        catch (e) {
-            categoryError.value = e.message
-        }
+    try {
+      categories.value = await api.get("/categories");
+      categoryError.value = "";
+    } catch (e) {
+      categoryError.value = e.message;
     }
-
-    async function init() {
-        return Promise.all([load(),loadCategories()])
-    }
-
-    return {init , categories , categoryError , loading , error , load , active , upsert , loadCategories , items}
+  }
+  async function init() {
+    await Promise.all([load(), loadCategories()]);
+  }
+  return {
+    items,
+    categories,
+    active,
+    loading,
+    error,
+    categoryError,
+    load,
+    loadCategories,
+    init,
+    upsert,
+  };
 });

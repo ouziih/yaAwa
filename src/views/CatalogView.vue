@@ -1,7 +1,8 @@
 <script setup>
-import { useProductStore } from '@/stores/product';
+import { useProductsStore } from '@/stores/product';
 import { onMounted, ref, computed } from 'vue';
-const store = useProductStore();
+import ProductCard from '@/components/ProductCard.vue';
+const store = useProductsStore();
 const selectedCategory = ref(null);
 
 const products = computed(() => {
@@ -137,49 +138,9 @@ onMounted(()=>store.init())
             </div>
             <div class="product-grid">
                 <!-- DEMANDE 02 / 05 — À PROGRAMMER : Transformer cette carte en ProductCard, déclarer les props et émettre add. Répéter les cartes depuis les données. -->
-                <article v-for="product in products" :key="product.id" class="product-card">
-                    <div class="product-media">
-                        <a aria-label="Voir Riz brisé parfumé" href="produits/01-riz.html">
-                            <img :alt="product.name" height="240" loading="lazy" :src="product.image"
-                                width="360" />
-                        </a>
-                    </div>
-                    <div class="product-body">
-                        <p class="overline">
-                            {{product.origin}}
-                        </p>
-                        <h3>
-                            <a href="produits/01-riz.html">
-                                {{product.name}}
-                            </a>
-                        </h3>
-                        <p class="muted small">
-                            {{product.unit}} · {{product.stock}} disponible(s)
-                        </p>
-                        <span :class="product.stock === 0 ? 'stock empty' : product.stock <= 5 ? 'stock low' : 'stock'">
-                            <span aria-hidden="true">
-                            </span>
-                            {{(product.stock == 0) ? "Rupture" : "Disponible"}}
-                        </span>
-                        <div class="product-bottom">
-                            <div>
-                                <del v-if="product.salePrice">{{product.price}}</del>
-                                <strong>
-                                    {{(product.salePrice ? product.salePrice : product.price)}} FCFA
-                                </strong>
-                            </div>
-                            <button aria-label="Ajouter Riz brisé parfumé au panier" class="add-button"
-                                data-action="ajouter-panier" type="button">
-                                <svg aria-hidden="true" class="icon" fill="none" height="20" stroke="currentColor"
-                                    stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" viewbox="0 0 24 24"
-                                    width="20">
-                                    <path d="M12 5v14M5 12h14">
-                                    </path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </article>
+                <ProductCard v-for="product in products" :key="product.id"
+                :product="product"
+                />
             </div>
         </section>
         <section class="loyalty-banner mt">
