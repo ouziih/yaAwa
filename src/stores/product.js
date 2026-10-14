@@ -1,4 +1,4 @@
-import { products } from '@/services/API';
+import { api } from '@/services/API';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
@@ -7,12 +7,24 @@ export const useProductStore = defineStore("products",()=>{
     const loading = ref(true);
     const error = ref('');
 
-    function load(){
-        setTimeout(()=>{items.value = [...products]},3000)
+    async function load(){
+        loading.value = true
+
+        try {
+            const products = await api.get('products');
+             items.value = products
+             return products
+        } 
+        catch (e) {
+            error.value = e.message
+        }
+        finally{
+            loading.value = false;
+        }
         // items.value = [...products]
     }
 
-    const categiries = ref([]);
+    const categories = ref([]);
     const categoryError = ref('');
     const active = computed(()=>items.value.filter((item)=>item.active));
 
@@ -30,14 +42,19 @@ export const useProductStore = defineStore("products",()=>{
         }
     }
 
-    function loadCategories() {
-        return [];
+  async function loadCategories() {
+        try {
+           const categorie = await api.get('categories');
+            categories.value = categorie
+        } 
+        catch (e) {
+            categoryError.value = e.message
+        }
     }
 
-    function init() {
-        load();
-        loadCategories();
+    async function init() {
+        return Promise.all([load(),loadCategories()])
     }
 
-    return {init , categiries , categoryError , loading , error , load , active , upsert , loadCategories , items}
+    return {init , categories , categoryError , loading , error , load , active , upsert , loadCategories , items}
 });

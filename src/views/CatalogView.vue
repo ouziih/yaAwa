@@ -1,8 +1,16 @@
 <script setup>
 import { useProductStore } from '@/stores/product';
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 const store = useProductStore();
-console.log(store);
+let products = ref([]);
+products.value =  store.active;
+
+
+
+
+function filtre(id) {
+products.value = store.active.filter((product)=>product.categoryId == id)
+}
 
 onMounted(()=>store.init())
 </script>
@@ -86,37 +94,14 @@ onMounted(()=>store.init())
             </div>
             <!-- DEMANDE 01 / 03 — À PROGRAMMER : Utiliser les catégories de l’API pour les images, la couleur CSS et le filtre. -->
             <div class="categories">
-                <a class="category" href="categories/cereales.html" style="--category-color: #b98a38">
-                    <img alt="" height="48" src="/images/cereales.svg" width="56" />
+                <button @click="filtre(category.id)" class="category"  :style="category.color" v-for="category in store.categories" :key="category.id">
+                    <img :alt="category.name" height="48" :src="category.image" width="56" />
                     <span>
-                        Céréales
+                        {{category.name}}
                     </span>
-                </a>
-                <a class="category" href="categories/legumes.html" style="--category-color: #468060">
-                    <img alt="" height="48" src="/images/legumes.svg" width="56" />
-                    <span>
-                        Légumes
-                    </span>
-                </a>
-                <a class="category" href="categories/epicerie.html" style="--category-color: #b65c3a">
-                    <img alt="" height="48" src="/images/epicerie.svg" width="56" />
-                    <span>
-                        Épicerie
-                    </span>
-                </a>
-                <a class="category" href="categories/poisson.html" style="--category-color: #477d87">
-                    <img alt="" height="48" src="/images/poisson.svg" width="56" />
-                    <span>
-                        Poisson
-                    </span>
-                </a>
-                <a class="category" href="categories/saveurs-locales.html" style="--category-color: #956687">
-                    <img alt="" height="48" src="/images/local.svg" width="56" />
-                    <span>
-                        Saveurs locales
-                    </span>
-                </a>
+                </button>
             </div>
+
         </section>
         <section id="catalogue">
             <div class="section-heading">
@@ -139,7 +124,7 @@ onMounted(()=>store.init())
             </div>
             <div class="product-grid">
                 <!-- DEMANDE 02 / 05 — À PROGRAMMER : Transformer cette carte en ProductCard, déclarer les props et émettre add. Répéter les cartes depuis les données. -->
-                <article v-for="product in store.active" :key="product.id" class="product-card">
+                <article v-for="product in (products.length == 0  ? store.active : products)" :key="product.id" class="product-card">
                     <div class="product-media">
                         <a aria-label="Voir Riz brisé parfumé" href="produits/01-riz.html">
                             <img :alt="product.name" height="240" loading="lazy" :src="product.image"
