@@ -1,16 +1,29 @@
 <script setup>
 import { useProductStore } from '@/stores/product';
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 const store = useProductStore();
-let products = ref([]);
-products.value =  store.active;
+const selectedCategory = ref(null);
 
+const products = computed(() => {
+  if (selectedCategory.value === null) {
+    return store.active;
+  }
 
-
+  return store.active.filter(
+    (product) =>{
+       return product.categoryId === selectedCategory.value
+    }
+  );
+});
 
 function filtre(id) {
-products.value = store.active.filter((product)=>product.categoryId == id)
+  if (selectedCategory.value === id) {
+    selectedCategory.value = null;
+  } else {
+    selectedCategory.value = id;
+  }
 }
+
 
 onMounted(()=>store.init())
 </script>
@@ -124,7 +137,7 @@ onMounted(()=>store.init())
             </div>
             <div class="product-grid">
                 <!-- DEMANDE 02 / 05 — À PROGRAMMER : Transformer cette carte en ProductCard, déclarer les props et émettre add. Répéter les cartes depuis les données. -->
-                <article v-for="product in (products.length == 0  ? store.active : products)" :key="product.id" class="product-card">
+                <article v-for="product in products" :key="product.id" class="product-card">
                     <div class="product-media">
                         <a aria-label="Voir Riz brisé parfumé" href="produits/01-riz.html">
                             <img :alt="product.name" height="240" loading="lazy" :src="product.image"
